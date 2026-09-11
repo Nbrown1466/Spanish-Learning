@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spanish Irregular Verb Family Tree</title>
+<style>
+  :root{
+    --bg:#faf8f3;
+    --ink:#222;
+    --muted:#6b6b6b;
+    --line:#9a8f80;
+    --root:#e8dcc7;
+    --present:#f8d7da;
+    --stem:#ffe7b3;
+    --yo:#d7ecff;
+    --pret:#d9ead3;
+    --future:#ddd5f3;
+    --special:#f5d0e4;
+    --subj:#d5efe8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
+  header{padding:32px 20px 10px;text-align:center;}
+  h1{margin:0 0 8px;font-size:clamp(28px,5vw,46px)}
+  header p{margin:0;color:var(--muted);font-size:16px}
+  .wrap{max-width:1500px;margin:auto;padding:24px 18px 60px;overflow-x:auto;}
+  .tree{min-width:1250px;display:flex;flex-direction:column;align-items:center;gap:28px;}
+  .node{border:2px solid rgba(0,0,0,.22);border-radius:18px;padding:14px 16px;box-shadow:0 4px 12px rgba(0,0,0,.06);text-align:center;background:white;}
+  .node strong{display:block;font-size:18px;margin-bottom:4px}
+  .node small{display:block;color:#555;line-height:1.35}
+  .root{background:var(--root);width:330px}
+  .tier{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;width:100%;position:relative;}
+  .branch{position:relative;padding-top:28px;}
+  .branch:before{content:"";position:absolute;top:0;left:50%;height:28px;border-left:2px solid var(--line);}
+  .tier:before{content:"";position:absolute;top:0;left:10%;right:10%;border-top:2px solid var(--line);}
+  .present{background:var(--present)} .stem{background:var(--stem)} .yo{background:var(--yo)} .pret{background:var(--pret)} .future{background:var(--future)} .special{background:var(--special)} .subj{background:var(--subj)}
+  .subgrid{margin-top:11px;display:grid;gap:8px;}
+  .leaf{background:rgba(255,255,255,.68);border-radius:12px;padding:8px 10px;line-height:1.35;font-size:14px;}
+  .leaf b{display:block;margin-bottom:2px}
+  .connector{height:26px;border-left:2px solid var(--line);}
+  .bottom{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;position:relative;}
+  .bottom:before{content:"";position:absolute;top:-28px;left:16.6%;right:16.6%;border-top:2px solid var(--line);}
+  .bottom .node{position:relative;}
+  .bottom .node:before{content:"";position:absolute;top:-30px;left:50%;height:30px;border-left:2px solid var(--line);}
+  .rule{margin-top:8px;padding:8px;border-radius:10px;background:rgba(255,255,255,.62);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;}
+  .legend{max-width:1150px;margin:28px auto 0;padding:0 18px;color:#444;line-height:1.55;}
+  @media(max-width:700px){header{text-align:left}}
+</style>
+</head>
+<body>
+<header><h1>Spanish Irregular Verb Family Tree</h1><p>Learn the pattern family first, then attach verbs to it.</p></header>
+<div class="wrap"><div class="tree">
+<div class="node root"><strong>SPANISH IRREGULAR VERBS</strong><small>Most irregular verbs are not random. They reuse a small number of patterns.</small></div>
+<div class="connector"></div>
+<section class="tier">
+<div class="branch"><div class="node present"><strong>Stem-changing families</strong><small>Mostly present tense “boot” changes</small><div class="subgrid"><div class="leaf"><b>E → IE</b>pensar, querer, cerrar, empezar, sentir<br><i>pienso, quieres, siente</i></div><div class="leaf"><b>O → UE</b>poder, volver, dormir, contar, encontrar<br><i>puedo, vuelve, duerme</i></div><div class="leaf"><b>E → I</b>pedir, repetir, servir, seguir, medir<br><i>pido, repite, sirve</i></div><div class="leaf"><b>U → UE</b>jugar<br><i>juego</i></div></div></div></div>
+<div class="branch"><div class="node yo"><strong>Irregular YO families</strong><small>Present indicative irregularity often feeds the subjunctive</small><div class="subgrid"><div class="leaf"><b>-GO</b>tener, venir, poner, salir, hacer<br><i>tengo, vengo, pongo, salgo, hago</i></div><div class="leaf"><b>-ZCO</b>conocer, parecer, ofrecer, conducir<br><i>conozco, parezco</i></div><div class="leaf"><b>-JO</b>coger, escoger, dirigir<br><i>cojo, escojo, dirijo</i></div><div class="leaf"><b>-Y</b>construir, incluir, huir, destruir<br><i>construyo, incluyo</i></div></div></div></div>
+<div class="branch"><div class="node pret"><strong>Irregular preterite stems</strong><small>Different stems, same core endings</small><div class="subgrid"><div class="leaf"><b>UV family</b>tener → tuv-, estar → estuv-, andar → anduv-</div><div class="leaf"><b>U family</b>poder → pud-, poner → pus-, saber → sup-</div><div class="leaf"><b>I family</b>querer → quis-, venir → vin-, hacer → hic-</div><div class="leaf"><b>J family</b>decir → dij-, traer → traj-, conducir → conduj-</div></div><div class="rule">e · iste · o · imos · isteis · ieron<br>J-stems: -eron</div></div></div>
+<div class="branch"><div class="node future"><strong>Future / conditional stems</strong><small>The same irregular stem is used in both tenses</small><div class="subgrid"><div class="leaf"><b>-DR-</b>tener → tendr-, venir → vendr-, poner → pondr-, salir → saldr-</div><div class="leaf"><b>Vowel loss</b>poder → podr-, saber → sabr-, caber → cabr-, haber → habr-</div><div class="leaf"><b>Special stems</b>querer → querr-, hacer → har-, decir → dir-</div></div></div></div>
+<div class="branch"><div class="node special"><strong>High-frequency special verbs</strong><small>These are irregular enough to learn as anchor verbs</small><div class="subgrid"><div class="leaf"><b>SER</b>soy, eres, es, somos, sois, son</div><div class="leaf"><b>IR</b>voy, vas, va, vamos, vais, van</div><div class="leaf"><b>HABER</b>he, has, ha/hay, hemos, habéis, han</div><div class="leaf"><b>DAR / VER</b>doy / veo</div></div></div></div>
+</section>
+<div class="connector"></div>
+<section class="bottom">
+<div class="node subj"><strong>Present subjunctive inherits the YO form</strong><small>Take present-indicative <b>yo</b>, remove -o, then add opposite-vowel endings.</small><div class="rule">tengo → teng- → tenga<br>vengo → veng- → venga<br>conozco → conozc- → conozca<br>digo → dig- → diga</div></div>
+<div class="node subj"><strong>Imperfect subjunctive inherits the preterite</strong><small>Take the <b>ellos preterite</b>, remove <b>-ron</b>, then add the -ra family.</small><div class="rule">tuvieron → tuvie- → tuviera<br>dijeron → dije- → dijera<br>pudieron → pudie- → pudiera</div></div>
+<div class="node special"><strong>Overlap families</strong><small>One verb can belong to several branches at once.</small><div class="rule">tener = -GO + E→IE + tuv- + tendr-<br>venir = -GO + E→IE + vin- + vendr-<br>decir = digo + E→I + dij- + dir-</div></div>
+</section>
+</div></div>
+<div class="legend"><b>Best way to study this:</b> choose one anchor verb per family. For example: <b>tener</b> for -GO, <b>pensar</b> for E→IE, <b>poder</b> for O→UE, <b>pedir</b> for E→I, and then learn the preterite/future stems as separate branches. The important idea is that a verb can sit in more than one family.</div>
+</body>
+</html>
