@@ -80,6 +80,39 @@
     .lesson-copy { max-width: 780px; margin: 12px 0 19px; color: var(--muted); font-size: 16px; line-height: 1.6; }
     code { padding: .12em .35em; border-radius: 5px; background: #eee9df; color: #754052; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
 
+    .concept-panel { margin: 0 0 20px; padding: clamp(15px, 2.5vw, 22px); border: 1px solid #cdddea; border-radius: 18px; background: linear-gradient(145deg, #f7fbff, #eef6fc); }
+    .concept-panel[hidden] { display: none; }
+    .concept-heading { display: flex; align-items: center; gap: 9px; margin: 0 0 13px; font-size: 16px; }
+    .concept-heading::before { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 8px; background: var(--blue); color: #174d77; content: "i"; font-family: Georgia, serif; font-weight: 900; }
+    .theory-content { color: #3d5262; font-size: 14px; line-height: 1.65; }
+    .theory-content p { margin: 0 0 12px; }
+    .theory-content p:last-child { margin-bottom: 0; }
+    .rule-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 13px 0; }
+    .rule-card { padding: 12px 13px; border: 1px solid #d5e2ec; border-radius: 12px; background: rgba(255,255,255,.78); }
+    .rule-card strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .code-anatomy { display: flex; align-items: center; justify-content: center; gap: 7px; overflow-x: auto; margin: 14px 0; padding: 15px; border-radius: 12px; background: var(--code); color: var(--code-ink); font-family: ui-monospace, monospace; white-space: nowrap; }
+    .code-part { position: relative; padding: 7px 8px; border-radius: 7px; }
+    .code-part.start { background: rgba(185,218,250,.2); color: #b9dafa; }
+    .code-part.attribute { background: rgba(244,224,168,.18); color: #f4e0a8; }
+    .code-part.end { background: rgba(204,232,208,.18); color: #cce8d0; }
+    .example-list { display: grid; gap: 7px; margin: 12px 0; }
+    .example-line { display: grid; grid-template-columns: 25px 1fr; gap: 8px; align-items: start; padding: 9px 10px; border-radius: 10px; background: rgba(255,255,255,.72); }
+    .example-line.good { color: var(--green-strong); }
+    .example-line.bad { color: var(--rose-strong); }
+    .example-line code { overflow-wrap: anywhere; }
+    .quirk { margin: 12px 0 0; padding: 11px 13px; border-left: 4px solid #d09a15; border-radius: 4px 10px 10px 4px; background: #fff7dc; color: #65521d; }
+    .quick-check { margin-top: 16px; padding-top: 15px; border-top: 1px solid #d5e2ec; }
+    .quick-check h3 { margin: 0 0 4px; color: var(--ink); font-size: 14px; }
+    .quiz-question { margin: 0 0 10px; color: #3d5262; font-size: 14px; font-weight: 700; }
+    .quiz-options { display: grid; gap: 7px; }
+    .quiz-option { width: 100%; padding: 10px 12px; border: 1px solid #cdddea; border-radius: 10px; background: white; color: var(--ink); font-size: 13px; font-weight: 700; text-align: left; }
+    .quiz-option:hover { border-color: var(--blue-strong); }
+    .quiz-option.correct { border-color: var(--green-strong); background: var(--green); color: #225b38; }
+    .quiz-option.wrong { border-color: var(--rose-strong); background: var(--rose); color: #6d2d3a; }
+    .quiz-option:disabled { cursor: default; opacity: 1; }
+    .quiz-feedback { display: none; margin: 9px 0 0; font-size: 13px; line-height: 1.45; }
+    .quiz-feedback.show { display: block; }
+
     .mission { margin-bottom: 18px; padding: 14px 16px; border-left: 5px solid #e1b94c; border-radius: 4px 14px 14px 4px; background: #fff7dc; line-height: 1.5; }
     .mission strong { display: block; margin-bottom: 3px; }
 
@@ -137,6 +170,7 @@
       .course-tabs { grid-template-columns: repeat(2, 1fr); }
       .course-tab { min-height: 48px; }
       .workspace { grid-template-columns: 1fr; }
+      .rule-grid { grid-template-columns: 1fr; }
       #editor, #preview { height: 330px; }
       .checklist { grid-template-columns: 1fr; }
       .controls { align-items: stretch; flex-direction: column; }
@@ -176,6 +210,16 @@
         <p class="lesson-kicker" id="lessonKicker"></p>
         <h2 id="lessonTitle"></h2>
         <p class="lesson-copy" id="lessonCopy"></p>
+        <section class="concept-panel" id="conceptPanel" aria-label="Lesson explanation" hidden>
+          <h3 class="concept-heading">Understand the rule</h3>
+          <div class="theory-content" id="theoryContent"></div>
+          <div class="quick-check" id="quickCheck">
+            <h3>Quick check</h3>
+            <p class="quiz-question" id="quizQuestion"></p>
+            <div class="quiz-options" id="quizOptions"></div>
+            <p class="quiz-feedback" id="quizFeedback" role="status"></p>
+          </div>
+        </section>
         <div class="mission"><strong>Your mission</strong><span id="mission"></span></div>
 
         <div class="workspace">
@@ -351,6 +395,124 @@
         ]
       }
     ];
+
+    const extraHTMLExercises = [
+      {
+        title: "Choose div or span",
+        kicker: "9 · Generic containers",
+        copy: "When no meaningful semantic element fits, <code>&lt;div&gt;</code> groups a block of content and <code>&lt;span&gt;</code> marks a small inline piece of text.",
+        mission: "Wrap the whole profile in a div with class profile. Wrap only the word musician in a span with class role.",
+        starter: "<h2>Iyana</h2>\n<p>I am a musician in Valencia.</p>",
+        hint: "Put the h2 and p inside <code>&lt;div class=\"profile\"&gt;...&lt;/div&gt;</code>. Put <code>&lt;span class=\"role\"&gt;</code> around only “musician.”",
+        checks: [
+          ["A .profile div contains the h2 and paragraph", doc => !!doc.querySelector("div.profile > h2") && !!doc.querySelector("div.profile > p")],
+          ["A .role span is inside the paragraph", doc => !!doc.querySelector("p span.role")],
+          ["The span contains only “musician”", doc => textOf(doc, "span.role") === "musician"]
+        ]
+      },
+      {
+        title: "Format text deliberately",
+        kicker: "10 · Text quirks",
+        copy: "HTML collapses ordinary whitespace. Use semantic emphasis tags for meaning, <code>&lt;br&gt;</code> for a deliberate line break, and entities for reserved characters.",
+        mission: "Make “Important” strongly important, emphasize “today,” and put “Doors: 19:30” on a new line using br.",
+        starter: "<p>Important: tickets go on sale today. Doors: 19:30</p>",
+        hint: "Use <code>&lt;strong&gt;Important&lt;/strong&gt;</code>, <code>&lt;em&gt;today&lt;/em&gt;</code>, and place <code>&lt;br&gt;</code> before “Doors.”",
+        checks: [
+          ["Important is inside strong", doc => textOf(doc, "strong") === "important"],
+          ["Today is inside em", doc => textOf(doc, "em") === "today"],
+          ["A br appears before the Doors text", doc => !!doc.querySelector("p br") && (doc.querySelector("p br")?.nextSibling?.textContent || "").includes("Doors")]
+        ]
+      },
+      {
+        title: "Build a data table",
+        kicker: "11 · Tables",
+        copy: "Tables are for data with rows and columns—not for arranging a page. Headers use <code>&lt;th&gt;</code>; ordinary cells use <code>&lt;td&gt;</code>.",
+        mission: "Create a table with Name and Instrument headers, then one data row containing Iyana and Flute.",
+        starter: "<h1>Musicians</h1>\n\n<table>\n  <!-- Add a header row and data row -->\n</table>",
+        hint: "Each row uses <code>&lt;tr&gt;</code>. Put two <code>&lt;th&gt;</code> elements in the first row and two <code>&lt;td&gt;</code> elements in the second.",
+        checks: [
+          ["The table has exactly two rows", doc => doc.querySelectorAll("table tr").length === 2],
+          ["The first row has Name and Instrument headers", doc => [...doc.querySelectorAll("table tr:first-child th")].map(x => x.textContent.trim().toLowerCase()).join("|") === "name|instrument"],
+          ["The second row contains Iyana and Flute data", doc => [...doc.querySelectorAll("table tr:nth-child(2) td")].map(x => x.textContent.trim().toLowerCase()).join("|") === "iyana|flute"]
+        ]
+      },
+      {
+        title: "Configure the head",
+        kicker: "12 · Invisible page information",
+        copy: "The head contains information about the document. It is not the visible header. Titles, character encoding, viewport rules, and stylesheet links belong there.",
+        mission: "Inside head, add UTF-8 charset metadata, a mobile viewport meta tag, and the title “My Music Site”.",
+        starter: "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <!-- Add metadata and title -->\n</head>\n<body>\n  <h1>Visible heading</h1>\n</body>\n</html>",
+        hint: "Add <code>&lt;meta charset=\"UTF-8\"&gt;</code>, <code>&lt;meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"&gt;</code>, and a title element.",
+        checks: [
+          ["The head declares UTF-8", doc => /utf-8/i.test(doc.querySelector("head meta[charset]")?.getAttribute("charset") || "")],
+          ["The head includes viewport metadata", doc => (doc.querySelector("head meta[name='viewport']")?.getAttribute("content") || "").includes("width=device-width")],
+          ["The browser title is “My Music Site”", doc => textOf(doc, "head title") === "my music site"]
+        ]
+      }
+    ];
+
+    htmlExercises.splice(8, 0, ...extraHTMLExercises);
+
+    const htmlTheory = {
+      "Your first heading": {
+        theory: `<p>Most HTML elements use a pair of tags surrounding content. The opening tag starts the element, and the closing tag repeats the name with a slash.</p><div class="code-anatomy"><span class="code-part start">&lt;p&gt;</span><span>Visible content</span><span class="code-part end">&lt;/p&gt;</span></div><div class="rule-grid"><div class="rule-card"><strong>Opening tag</strong><code>&lt;p&gt;</code> tells the browser where the paragraph begins.</div><div class="rule-card"><strong>Closing tag</strong><code>&lt;/p&gt;</code> tells it where the paragraph ends. The slash means “close.”</div></div><p>Headings and paragraphs are different kinds of content. <code>&lt;h1&gt;</code> means the main heading; <code>&lt;p&gt;</code> means a paragraph. Tags describe meaning, not merely appearance.</p><p class="quirk"><strong>Quirk:</strong> Browsers try to repair missing closing tags, so broken HTML may appear to work. Do not depend on that repair—the resulting nesting can be different from what you intended.</p>`,
+        quiz: { q: "Which version is a complete paragraph element?", options: ["<p>Hello", "<p>Hello</p>", "</p>Hello<p>"], answer: 1, explain: "A paired element needs an opening tag, its content, and a closing tag with a slash." }
+      },
+      "Build a text hierarchy": {
+        theory: `<p>HTML supplies six heading levels: <code>&lt;h1&gt;</code> through <code>&lt;h6&gt;</code>. The number represents the heading’s level in the document outline.</p><div class="example-list"><div class="example-line good"><span>✓</span><span><code>&lt;h1&gt;Music Festival&lt;/h1&gt;</code> — page topic</span></div><div class="example-line good"><span>✓</span><span><code>&lt;h2&gt;Performers&lt;/h2&gt;</code> — major section</span></div><div class="example-line good"><span>✓</span><span><code>&lt;h3&gt;Friday lineup&lt;/h3&gt;</code> — subsection</span></div></div><p>Choose a heading level for structure, not because you like its default size. CSS controls size later. A page normally has one clear <code>h1</code>, and you should not jump from h2 to h5 merely for styling.</p><p class="quirk"><strong>Quirk:</strong> A heading is not the same as the <code>&lt;head&gt;</code>. Headings are visible content in the body; head contains invisible document information.</p>`,
+        quiz: { q: "You need a subsection inside an h2 section. Which heading normally comes next?", options: ["h1", "h3", "head"], answer: 1, explain: "An h3 is nested conceptually beneath an h2. The head element is document metadata, not a visible heading." }
+      },
+      "Make a working link": {
+        theory: `<p>Attributes add information to an element. They go inside the opening tag, after the tag name and before the final <code>&gt;</code>.</p><div class="code-anatomy"><span class="code-part start">&lt;a</span><span class="code-part attribute">href="https://example.com"</span><span class="code-part end">&gt;</span><span>Visit</span><span>&lt;/a&gt;</span></div><div class="rule-grid"><div class="rule-card"><strong>href</strong>The destination. Without it, an <code>a</code> element is not a functioning hyperlink.</div><div class="rule-card"><strong>Link text</strong>The clickable content between <code>&lt;a&gt;</code> and <code>&lt;/a&gt;</code>.</div></div><p>Quote attribute values. Absolute URLs include the protocol, such as <code>https://</code>. Relative URLs such as <code>about.html</code> point within your own site.</p><p class="quirk"><strong>Quirk:</strong> If <code>target="_blank"</code> opens a new tab, also use <code>rel="noopener noreferrer"</code> for safety.</p>`,
+        quiz: { q: "Where does href belong?", options: ["Inside the opening <a ...> tag", "Between <a> and </a>", "Inside the closing </a> tag"], answer: 0, explain: "Attributes belong in the opening tag, before its final >." }
+      },
+      "Show an image": {
+        theory: `<p><code>&lt;img</code> is only the beginning of the tag. Attributes follow it, and one final <code>&gt;</code> ends the whole image element.</p><div class="code-anatomy"><span class="code-part start">&lt;img</span><span class="code-part attribute">src="photo.jpg"</span><span class="code-part attribute">alt="A photo"</span><span class="code-part end">&gt;</span></div><div class="example-list"><div class="example-line bad"><span>✕</span><span><code>&lt;img</code> — incomplete; the tag was never ended</span></div><div class="example-line good"><span>✓</span><span><code>&lt;img&gt;</code> — valid element, but it has no image source</span></div><div class="example-line good"><span>✓</span><span><code>&lt;img src="cat.jpg" alt="A cat"&gt;</code> — displays the image and describes it</span></div><div class="example-line bad"><span>✕</span><span><code>&lt;img&gt;&lt;/img&gt;</code> — img is a void element and never uses a closing tag</span></div></div><div class="rule-grid"><div class="rule-card"><strong>src</strong>Tells the browser where the image file is. It can be a relative path or URL.</div><div class="rule-card"><strong>alt</strong>Describes the image for screen readers or when the image cannot load. Use <code>alt=""</code> only for a purely decorative image.</div></div><p class="quirk"><strong>Quirk:</strong> Void elements cannot contain content. Other common void elements include <code>input</code>, <code>br</code>, <code>hr</code>, <code>meta</code>, and <code>link</code>.</p>`,
+        quiz: { q: "Which image element is complete and useful?", options: ["<img src=\"cat.jpg\" alt=\"A cat\">", "<img>src=\"cat.jpg\"", "<img src=\"cat.jpg\"></img>"], answer: 0, explain: "All attributes must be inside the tag before its final >, and img does not take a closing tag." }
+      },
+      "Create a list": {
+        theory: `<p>A list has a container and items. Use <code>&lt;ul&gt;</code> when order does not matter, or <code>&lt;ol&gt;</code> when the sequence matters. Each item is an <code>&lt;li&gt;</code>.</p><div class="code-anatomy"><span>&lt;ul&gt;</span><span class="code-part attribute">&lt;li&gt;Flute&lt;/li&gt;</span><span>&lt;/ul&gt;</span></div><p>The list items belong inside the list container. A browser may repair loose li elements, but valid structure makes the relationship unambiguous.</p><p class="quirk"><strong>Quirk:</strong> To create a nested list, put the entire new ul or ol inside an li—not directly beside the li.</p>`,
+        quiz: { q: "Which element represents one item in either kind of list?", options: ["<list>", "<item>", "<li>"], answer: 2, explain: "Both ul and ol contain li elements. HTML has no list or item tag." }
+      },
+      "Use meaningful sections": {
+        theory: `<p>Semantic elements communicate purpose. <code>header</code> introduces a page or section, <code>nav</code> contains major navigation, <code>main</code> holds the unique central content, and <code>footer</code> holds closing information.</p><div class="rule-grid"><div class="rule-card"><strong>Meaning first</strong>Use the element that describes the content, even before CSS makes it look different.</div><div class="rule-card"><strong>Main is special</strong>A document should have one visible <code>main</code>. Headers and footers can appear inside sections too.</div></div><p class="quirk"><strong>Quirk:</strong> <code>&lt;header&gt;</code> is visible body content. <code>&lt;head&gt;</code> is invisible document metadata. Their names are similar, but their jobs are completely different.</p>`,
+        quiz: { q: "Where should the page’s unique central content go?", options: ["<head>", "<main>", "<header>"], answer: 1, explain: "Main contains the unique primary content. Head contains metadata and header introduces visible content." }
+      },
+      "Build a button": {
+        theory: `<p>A button represents an action: submitting, opening, toggling, deleting, or changing something. Its visible text becomes its accessible name, so use a clear verb.</p><div class="example-list"><div class="example-line good"><span>✓</span><span><code>&lt;button type="button"&gt;Open menu&lt;/button&gt;</code></span></div><div class="example-line bad"><span>✕</span><span><code>&lt;div&gt;Open menu&lt;/div&gt;</code> — looks like text and lacks button behavior</span></div></div><p>Use a link for navigation and a button for an action. They are not interchangeable even if CSS makes them look alike.</p><p class="quirk"><strong>Quirk:</strong> Inside a form, a button defaults to <code>type="submit"</code>. If it should not submit the form, explicitly use <code>type="button"</code>.</p>`,
+        quiz: { q: "A control opens and closes a menu without navigating. What should it be?", options: ["A button", "A link", "A paragraph"], answer: 0, explain: "Opening a menu is an action, so a button has the correct behavior and keyboard support." }
+      },
+      "Collect user input": {
+        theory: `<p>A form groups fields. The label explains the field, while the input collects a value. Matching <code>for</code> and <code>id</code> attributes connect them.</p><div class="code-anatomy"><span>&lt;label</span><span class="code-part attribute">for="email"</span><span>&gt;Email&lt;/label&gt;</span><span>&lt;input</span><span class="code-part attribute">id="email" name="email" type="email"</span><span>&gt;</span></div><div class="rule-grid"><div class="rule-card"><strong>id</strong>Uniquely identifies this element on the page and connects it to the label.</div><div class="rule-card"><strong>name</strong>The key used when the value is submitted. Without name, a field’s value is usually not included in form data.</div><div class="rule-card"><strong>type</strong>Controls the input behavior. <code>email</code> can show an email keyboard and basic validation.</div><div class="rule-card"><strong>input is void</strong>It ends with <code>&gt;</code> and never uses <code>&lt;/input&gt;</code>.</div></div><p class="quirk"><strong>Quirk:</strong> Placeholder text is an example, not a replacement for a persistent label.</p>`,
+        quiz: { q: "Which two attribute values connect a label to an input?", options: ["The label’s for and input’s id", "Both class values", "The input’s type and name"], answer: 0, explain: "The label for value must exactly match the input id." }
+      },
+      "Choose div or span": {
+        theory: `<p><code>div</code> and <code>span</code> have no built-in semantic meaning. Use them only when a more meaningful element such as article, nav, or button does not fit.</p><div class="rule-grid"><div class="rule-card"><strong>div</strong>A block-level container used to group larger regions or components.</div><div class="rule-card"><strong>span</strong>An inline container used around a small run of text or other phrasing content.</div></div><p>Classes can be reused across many elements. IDs should be unique within a document.</p><p class="quirk"><strong>Quirk:</strong> A div starts on a new line by default; a span stays in the surrounding text. CSS can change display, but their allowed content and usual purpose still differ.</p>`,
+        quiz: { q: "You need to style one word inside a sentence. Which generic element fits best?", options: ["div", "span", "main"], answer: 1, explain: "Span is an inline container, so it can wrap one word without breaking the text into a new block." }
+      },
+      "Format text deliberately": {
+        theory: `<p>HTML collapses runs of spaces and line breaks in the source into ordinary spacing. Pressing Return several times in the editor does not create visible blank lines.</p><div class="rule-grid"><div class="rule-card"><strong>strong</strong>Marks strong importance. Browsers usually render it bold.</div><div class="rule-card"><strong>em</strong>Marks stress emphasis. Browsers usually render it italic.</div><div class="rule-card"><strong>br</strong>A void element that forces a line break within content, such as an address or poem.</div><div class="rule-card"><strong>hr</strong>A void element representing a thematic break, not merely a decorative line.</div></div><p>Reserved characters can use entities: <code>&amp;lt;</code> displays &lt;, <code>&amp;gt;</code> displays &gt;, and <code>&amp;amp;</code> displays &amp;.</p><p class="quirk"><strong>Quirk:</strong> Do not use repeated br tags to create layout spacing. Use paragraphs for text structure and CSS margin for visual spacing.</p>`,
+        quiz: { q: "Why don’t five spaces typed in normal HTML show as five spaces?", options: ["HTML collapses ordinary whitespace", "Spaces are illegal", "The browser converts them to tabs"], answer: 0, explain: "Normal HTML whitespace is collapsed. Use structure and CSS rather than typing extra spaces for layout." }
+      },
+      "Build a data table": {
+        theory: `<p>Tables express relationships in row-and-column data. <code>table</code> contains rows (<code>tr</code>); each row contains header cells (<code>th</code>) or data cells (<code>td</code>).</p><div class="code-anatomy"><span>&lt;tr&gt;</span><span class="code-part attribute">&lt;th&gt;Name&lt;/th&gt;</span><span class="code-part attribute">&lt;td&gt;Iyana&lt;/td&gt;</span><span>&lt;/tr&gt;</span></div><p>A complete table often also uses <code>caption</code>, <code>thead</code>, and <code>tbody</code>. A <code>scope="col"</code> or <code>scope="row"</code> attribute can clarify which data a header describes.</p><p class="quirk"><strong>Quirk:</strong> Never use a table simply to position page sections. CSS Grid and Flexbox are layout tools; table is for tabular data.</p>`,
+        quiz: { q: "Which element creates a table row?", options: ["<td>", "<tr>", "<row>"], answer: 1, explain: "tr means table row. th and td create cells inside that row." }
+      },
+      "Configure the head": {
+        theory: `<p>A complete document separates information about the page from visible page content.</p><div class="rule-grid"><div class="rule-card"><strong>head</strong>Contains title, metadata, stylesheet links, and certain scripts. Its content is generally not displayed in the page.</div><div class="rule-card"><strong>body</strong>Contains headings, paragraphs, images, controls, and everything else rendered as the page.</div></div><p><code>&lt;meta charset="UTF-8"&gt;</code> tells the browser how text is encoded. The viewport meta tag makes the page size correctly on phones. The <code>title</code> appears in the browser tab and bookmarks.</p><p class="quirk"><strong>Quirk:</strong> <code>&lt;title&gt;</code> is required to have a closing tag, but <code>&lt;meta&gt;</code> and <code>&lt;link&gt;</code> are void elements and do not.</p>`,
+        quiz: { q: "Which text appears in the browser tab rather than the visible page?", options: ["The h1", "The title element", "The header element"], answer: 1, explain: "Title lives in head and labels the browser tab. An h1 is the visible page heading." }
+      },
+      "Nest an article": {
+        theory: `<p>Nesting means placing one element inside another. The inner element is a child; the outer element is its parent. Close inner elements before closing their parent.</p><div class="example-list"><div class="example-line good"><span>✓</span><span><code>&lt;article&gt;&lt;p&gt;Text&lt;/p&gt;&lt;/article&gt;</code></span></div><div class="example-line bad"><span>✕</span><span><code>&lt;article&gt;&lt;p&gt;Text&lt;/article&gt;&lt;/p&gt;</code> — tags overlap instead of nesting</span></div></div><p>An article should make sense on its own, like a post, product card, review, or news item. A section groups a themed part of a larger document and normally has a heading.</p><p class="quirk"><strong>Quirk:</strong> Not every box is an article. If the content is only a styling wrapper with no independent meaning, use div.</p>`,
+        quiz: { q: "Which closing order is correct for <article><p>Text ...?", options: ["</article></p>", "</p></article>", "</article> only"], answer: 1, explain: "Close the most recently opened element first, like properly nested boxes." }
+      },
+      "Build a complete page": {
+        theory: `<p>A full HTML document has a predictable skeleton. The doctype tells the browser to use modern HTML rules; html wraps the document; head stores metadata; body stores visible content.</p><div class="example-list"><div class="example-line good"><span>1</span><span><code>&lt;!DOCTYPE html&gt;</code></span></div><div class="example-line good"><span>2</span><span><code>&lt;html lang="en"&gt;</code> wraps head and body</span></div><div class="example-line good"><span>3</span><span><code>&lt;head&gt;...metadata...&lt;/head&gt;</code></span></div><div class="example-line good"><span>4</span><span><code>&lt;body&gt;...visible page...&lt;/body&gt;</code></span></div></div><p>The <code>lang</code> attribute identifies the document language for screen readers, translation, and search engines. Indentation does not change meaning, but it makes nesting visible to humans.</p><p class="quirk"><strong>Quirk:</strong> <code>&lt;!DOCTYPE html&gt;</code> is a declaration, not a normal element. It has no closing tag and should be the first line.</p>`,
+        quiz: { q: "Where should a visible h1 go in a complete document?", options: ["Inside head", "Inside body", "Before the doctype"], answer: 1, explain: "Visible page content belongs inside body. Head contains information about the document." }
+      }
+    };
+
+    htmlExercises.forEach(exercise => Object.assign(exercise, htmlTheory[exercise.title] || {}));
 
     const cssExercises = [
       {
@@ -635,6 +797,11 @@
     const nextButton = document.querySelector("#nextButton");
     const hintBox = document.querySelector("#hintBox");
     const courseTabs = document.querySelector("#courseTabs");
+    const conceptPanel = document.querySelector("#conceptPanel");
+    const theoryContent = document.querySelector("#theoryContent");
+    const quizQuestion = document.querySelector("#quizQuestion");
+    const quizOptions = document.querySelector("#quizOptions");
+    const quizFeedback = document.querySelector("#quizFeedback");
 
     function textOf(doc, selector) { return (doc.querySelector(selector)?.textContent || "").trim().toLowerCase(); }
     function save() { localStorage.setItem(stateKey, JSON.stringify(state)); }
@@ -646,8 +813,15 @@
       exercises = course.exercises;
       if (!state.courses[key]) state.courses[key] = { completed: [], code: {}, current: 0 };
       courseState = state.courses[key];
+      if (key === "html" && !state.htmlTheoryUpgrade) {
+        courseState.completed = (courseState.completed || []).map(index => index >= 8 ? index + 4 : index);
+        courseState.code = Object.fromEntries(Object.entries(courseState.code || {}).map(([index, code]) => [Number(index) >= 8 ? Number(index) + 4 : index, code]));
+        if (Number.isInteger(courseState.current) && courseState.current >= 8) courseState.current += 4;
+        state.htmlTheoryUpgrade = true;
+      }
       courseState.completed = Array.isArray(courseState.completed) ? courseState.completed : [];
       courseState.code = courseState.code && typeof courseState.code === "object" ? courseState.code : {};
+      courseState.quiz = courseState.quiz && typeof courseState.quiz === "object" ? courseState.quiz : {};
       current = Math.min(Number.isInteger(courseState.current) ? courseState.current : 0, exercises.length - 1);
       state.currentCourse = key;
       save();
@@ -667,6 +841,47 @@
         });
         courseTabs.append(button);
       });
+    }
+
+    function renderTeaching() {
+      const exercise = exercises[current];
+      if (!exercise.theory || !exercise.quiz) {
+        conceptPanel.hidden = true;
+        return;
+      }
+      conceptPanel.hidden = false;
+      theoryContent.innerHTML = exercise.theory;
+      quizQuestion.textContent = exercise.quiz.q;
+      quizOptions.innerHTML = "";
+      quizFeedback.className = "quiz-feedback";
+      quizFeedback.textContent = "";
+      const savedAnswer = courseState.quiz[current];
+      exercise.quiz.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "quiz-option";
+        button.textContent = option;
+        button.addEventListener("click", () => answerQuiz(index));
+        quizOptions.append(button);
+      });
+      if (Number.isInteger(savedAnswer)) showQuizResult(savedAnswer);
+    }
+
+    function answerQuiz(index) {
+      courseState.quiz[current] = index;
+      save();
+      showQuizResult(index);
+    }
+
+    function showQuizResult(selected) {
+      const quiz = exercises[current].quiz;
+      [...quizOptions.children].forEach((button, index) => {
+        button.disabled = true;
+        if (index === quiz.answer) button.classList.add("correct");
+        if (index === selected && selected !== quiz.answer) button.classList.add("wrong");
+      });
+      quizFeedback.className = "quiz-feedback show";
+      quizFeedback.innerHTML = `<strong>${selected === quiz.answer ? "Correct." : "Not quite."}</strong> ${quiz.explain}`;
     }
 
     function renderNav() {
@@ -697,6 +912,7 @@
       document.querySelector("#lessonTitle").textContent = exercise.title;
       document.querySelector("#lessonCopy").innerHTML = exercise.copy;
       document.querySelector("#mission").textContent = exercise.mission;
+      renderTeaching();
       editor.value = courseState.code[current] ?? exercise.starter;
       document.querySelector("#editorLabel").textContent = course.editorLabel;
       hintBox.innerHTML = exercise.hint;
@@ -807,7 +1023,7 @@
     });
     document.querySelector("#reviewButton").addEventListener("click", () => loadExercise(0));
     document.querySelector("#resetCourse").addEventListener("click", () => {
-      state.courses[currentCourse] = { completed: [], code: {}, current: 0 };
+      state.courses[currentCourse] = { completed: [], code: {}, quiz: {}, current: 0 };
       prepareCourse(currentCourse);
       save();
       loadExercise(0);
