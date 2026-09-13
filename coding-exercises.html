@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#faf8f3">
+  <title>HTML Coding Lab</title>
+  <style>
+    :root {
+      --paper: #faf8f3;
+      --panel: rgba(255,255,255,.76);
+      --white: #fff;
+      --ink: #25231f;
+      --muted: #716d64;
+      --line: #ddd7ca;
+      --blue: #b9dafa;
+      --blue-strong: #246596;
+      --green: #cce8d0;
+      --green-strong: #2c7448;
+      --rose: #f3c9d0;
+      --rose-strong: #984254;
+      --yellow: #f4e0a8;
+      --code: #24262c;
+      --code-ink: #f7f4ec;
+      --shadow: 0 18px 48px rgba(72, 62, 48, .11);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(185,218,250,.36), transparent 28rem),
+        radial-gradient(circle at 93% 86%, rgba(244,224,168,.34), transparent 26rem),
+        var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; }
+
+    .app { width: min(100% - 28px, 1280px); margin: 0 auto; padding: 22px 0 42px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .logo { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; background: var(--blue); color: #164c75; font-family: ui-monospace, monospace; font-weight: 900; }
+    .brand h1 { margin: 0; font-size: clamp(20px, 3vw, 28px); letter-spacing: -.03em; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    .back-link { padding: 9px 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255,255,255,.72); color: var(--ink); font-size: 14px; font-weight: 750; text-decoration: none; white-space: nowrap; }
+
+    .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .progress-track { flex: 1; height: 10px; overflow: hidden; border-radius: 999px; background: #e8e2d8; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: var(--green-strong); transition: width .35s ease; }
+    .progress-text { min-width: 93px; color: var(--muted); font-size: 13px; font-weight: 750; text-align: right; }
+
+    .layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 18px; align-items: start; }
+    .lesson-nav, .lesson { border: 1px solid rgba(110,99,82,.14); border-radius: 24px; background: var(--panel); box-shadow: 0 12px 42px rgba(79,68,50,.06); backdrop-filter: blur(12px); }
+    .lesson-nav { position: sticky; top: 16px; padding: 15px; }
+    .lesson-nav h2 { margin: 4px 5px 12px; color: var(--muted); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+    .lesson-list { display: grid; gap: 7px; }
+    .lesson-dot { display: grid; grid-template-columns: 31px 1fr; align-items: center; gap: 9px; width: 100%; min-height: 47px; padding: 6px 9px; border: 0; border-radius: 13px; background: transparent; color: var(--muted); text-align: left; }
+    .lesson-dot:hover { background: rgba(255,255,255,.8); }
+    .lesson-dot.active { background: var(--blue); color: #174d77; }
+    .lesson-dot.done { color: var(--green-strong); }
+    .dot-number { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: white; font-size: 12px; font-weight: 850; }
+    .lesson-dot.done .dot-number { border-color: transparent; background: var(--green); }
+    .dot-title { overflow: hidden; font-size: 13px; font-weight: 750; text-overflow: ellipsis; white-space: nowrap; }
+
+    .lesson { padding: clamp(18px, 3vw, 30px); }
+    .lesson-kicker { margin: 0 0 7px; color: var(--blue-strong); font-size: 12px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .lesson h2 { margin: 0; font-size: clamp(27px, 4.5vw, 40px); letter-spacing: -.035em; line-height: 1.08; }
+    .lesson-copy { max-width: 780px; margin: 12px 0 19px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+    code { padding: .12em .35em; border-radius: 5px; background: #eee9df; color: #754052; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
+
+    .mission { margin-bottom: 18px; padding: 14px 16px; border-left: 5px solid #e1b94c; border-radius: 4px 14px 14px 4px; background: #fff7dc; line-height: 1.5; }
+    .mission strong { display: block; margin-bottom: 3px; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+    .pane { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 17px; background: var(--white); }
+    .pane-head { display: flex; min-height: 45px; align-items: center; justify-content: space-between; gap: 8px; padding: 0 13px; border-bottom: 1px solid var(--line); background: #f7f4ee; }
+    .pane-title { font-size: 13px; font-weight: 850; }
+    .live { display: inline-flex; align-items: center; gap: 6px; color: var(--green-strong); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .live::before { width: 7px; height: 7px; border-radius: 50%; background: #51a66f; content: ""; }
+    #editor { display: block; width: 100%; height: 390px; resize: vertical; padding: 17px; border: 0; outline: 0; background: var(--code); color: var(--code-ink); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 14px; line-height: 1.65; tab-size: 2; caret-color: var(--yellow); }
+    #preview { display: block; width: 100%; height: 390px; border: 0; background: white; }
+
+    .check-area { margin-top: 17px; }
+    .checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; padding: 0; list-style: none; }
+    .check-item { display: flex; align-items: flex-start; gap: 8px; padding: 10px 11px; border-radius: 11px; background: #f2efe9; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .check-icon { display: grid; flex: 0 0 20px; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: #ded8cc; color: white; font-size: 12px; font-weight: 900; }
+    .check-item.pass { background: #e7f4e9; color: var(--green-strong); }
+    .check-item.pass .check-icon { background: var(--green-strong); }
+
+    .feedback { display: none; margin-bottom: 14px; padding: 13px 15px; border-radius: 13px; font-size: 14px; font-weight: 700; line-height: 1.45; }
+    .feedback.show { display: block; }
+    .feedback.success { background: var(--green); color: #225b38; }
+    .feedback.try { background: var(--rose); color: #6d2d3a; }
+
+    .controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .control-group { display: flex; align-items: center; gap: 8px; }
+    .btn { min-height: 46px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 13px; background: white; color: var(--ink); font-weight: 800; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn.primary { border-color: transparent; background: var(--blue-strong); color: white; }
+    .btn.next { border-color: transparent; background: var(--green-strong); color: white; }
+    .btn:disabled { cursor: not-allowed; opacity: .42; transform: none; }
+    .hint-box { display: none; margin: 13px 0 0; padding: 13px 15px; border-radius: 13px; background: #e8f2fb; color: #315b78; font-size: 14px; line-height: 1.5; }
+    .hint-box.show { display: block; }
+
+    .celebration { display: none; min-height: 650px; place-items: center; text-align: center; }
+    .celebration.show { display: grid; }
+    .celebration-card { max-width: 570px; }
+    .trophy { display: grid; width: 96px; height: 96px; margin: 0 auto 20px; place-items: center; border-radius: 28px; background: var(--yellow); color: #7a5b06; font-family: ui-monospace, monospace; font-size: 34px; font-weight: 900; transform: rotate(-4deg); }
+    .celebration h2 { margin: 0 0 10px; font-size: clamp(34px, 7vw, 58px); letter-spacing: -.05em; }
+    .celebration p { margin: 0 auto 23px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .lesson-nav { position: static; overflow-x: auto; padding: 10px; }
+      .lesson-nav h2 { display: none; }
+      .lesson-list { display: flex; width: max-content; }
+      .lesson-dot { width: 48px; min-height: 42px; padding: 5px 8px; grid-template-columns: 1fr; }
+      .dot-title { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .app { width: min(100% - 18px, 1280px); padding-top: max(14px, env(safe-area-inset-top)); }
+      .brand p { display: none; }
+      .back-link { font-size: 13px; }
+      .workspace { grid-template-columns: 1fr; }
+      #editor, #preview { height: 330px; }
+      .checklist { grid-template-columns: 1fr; }
+      .controls { align-items: stretch; flex-direction: column; }
+      .control-group { display: grid; grid-template-columns: 1fr 1fr; }
+      .btn.primary, .btn.next { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">&lt;/&gt;</span>
+        <div><h1>HTML Coding Lab</h1><p>Learn by building and seeing the result.</p></div>
+      </div>
+      <a class="back-link" href="index.html">← Flashcards</a>
+    </header>
+
+    <div class="progress-row" aria-label="Course progress">
+      <div class="progress-track"><div class="progress-bar" id="courseProgress"></div></div>
+      <span class="progress-text" id="progressText">0 of 10 complete</span>
+    </div>
+
+    <div class="layout">
+      <aside class="lesson-nav" aria-label="Coding exercises">
+        <h2>Exercises</h2>
+        <div class="lesson-list" id="lessonList"></div>
+      </aside>
+
+      <section class="lesson" id="lessonView">
+        <p class="lesson-kicker" id="lessonKicker"></p>
+        <h2 id="lessonTitle"></h2>
+        <p class="lesson-copy" id="lessonCopy"></p>
+        <div class="mission"><strong>Your mission</strong><span id="mission"></span></div>
+
+        <div class="workspace">
+          <section class="pane" aria-label="Code editor">
+            <div class="pane-head"><span class="pane-title">Your HTML</span><span class="pane-title" id="lineCount">1 line</span></div>
+            <textarea id="editor" aria-label="HTML code editor" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+          </section>
+          <section class="pane" aria-label="Live preview">
+            <div class="pane-head"><span class="pane-title">What the browser sees</span><span class="live">Live</span></div>
+            <iframe id="preview" title="Live preview of your HTML" sandbox></iframe>
+          </section>
+        </div>
+
+        <div class="check-area">
+          <ul class="checklist" id="checklist"></ul>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <div class="controls">
+            <div class="control-group">
+              <button class="btn" id="resetCode" type="button">Reset code</button>
+              <button class="btn" id="hintButton" type="button">Show hint</button>
+            </div>
+            <button class="btn primary" id="checkButton" type="button">Check my code</button>
+            <button class="btn next" id="nextButton" type="button" hidden>Next exercise →</button>
+          </div>
+          <div class="hint-box" id="hintBox"></div>
+        </div>
+      </section>
+
+      <section class="lesson celebration" id="celebration">
+        <div class="celebration-card">
+          <div class="trophy">10/10</div>
+          <p class="lesson-kicker">Course complete</p>
+          <h2>You built a real webpage.</h2>
+          <p>You can now structure text, create links and images, build lists, use semantic sections, and make a basic form. Your code—not a multiple-choice answer—did the work.</p>
+          <button class="btn primary" id="reviewButton" type="button">Review the exercises</button>
+          <button class="btn" id="resetCourse" type="button">Start over</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const exercises = [
+      {
+        title: "Your first heading",
+        kicker: "1 · Page structure",
+        copy: "HTML tags tell the browser what each piece of content means. The <code>&lt;h1&gt;</code> tag creates the main heading, and <code>&lt;p&gt;</code> creates a paragraph.",
+        mission: "Change the heading to “My First Webpage” and add a paragraph that says “I made this with HTML.”",
+        starter: "<h1>Hello!</h1>\n\n<!-- Add your paragraph below -->",
+        hint: "Use <code>&lt;p&gt;</code> before the sentence and <code>&lt;/p&gt;</code> after it.",
+        checks: [
+          ["An h1 says “My First Webpage”", doc => textOf(doc, "h1") === "my first webpage"],
+          ["A paragraph says “I made this with HTML.”", doc => textOf(doc, "p") === "i made this with html."]
+        ]
+      },
+      {
+        title: "Build a text hierarchy",
+        kicker: "2 · Headings",
+        copy: "Headings create an outline. Use one <code>&lt;h1&gt;</code> for the page title, then <code>&lt;h2&gt;</code> for major sections beneath it.",
+        mission: "Keep the h1, then add an h2 named “About Me” followed by any paragraph about yourself.",
+        starter: "<h1>Iyana's Website</h1>\n\n<!-- Add an h2 and a paragraph -->",
+        hint: "Your new section can look like <code>&lt;h2&gt;About Me&lt;/h2&gt;</code> followed by <code>&lt;p&gt;...&lt;/p&gt;</code>.",
+        checks: [
+          ["The page has one h1", doc => doc.querySelectorAll("h1").length === 1],
+          ["An h2 says “About Me”", doc => textOf(doc, "h2") === "about me"],
+          ["A non-empty paragraph follows the h2", doc => !!doc.querySelector("h2 + p")?.textContent.trim()]
+        ]
+      },
+      {
+        title: "Make a working link",
+        kicker: "3 · Attributes",
+        copy: "The anchor tag <code>&lt;a&gt;</code> creates a link. Its <code>href</code> attribute tells the browser where the link should go.",
+        mission: "Make the words “Visit Wikipedia” link to https://wikipedia.org.",
+        starter: "<h1>Useful links</h1>\n\n<p>Visit Wikipedia</p>",
+        hint: "Replace the paragraph with <code>&lt;a href=\"https://wikipedia.org\"&gt;Visit Wikipedia&lt;/a&gt;</code>.",
+        checks: [
+          ["The page contains an anchor tag", doc => !!doc.querySelector("a")],
+          ["The link text says “Visit Wikipedia”", doc => textOf(doc, "a") === "visit wikipedia"],
+          ["The href points to wikipedia.org", doc => /^https:\/\/(www\.)?wikipedia\.org\/?$/i.test(doc.querySelector("a")?.getAttribute("href") || "")]
+        ]
+      },
+      {
+        title: "Show an image",
+        kicker: "4 · Images",
+        copy: "Images use a <code>src</code> for the file location and <code>alt</code> text to describe the image when it cannot be seen.",
+        mission: "Add an image using the supplied URL. Give it the alt text “A mountain landscape”.",
+        starter: "<h1>Travel inspiration</h1>\n\n<!-- Image URL: https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600 -->",
+        hint: "Use <code>&lt;img src=\"URL\" alt=\"A mountain landscape\"&gt;</code>. The img tag does not need a closing tag.",
+        checks: [
+          ["The page contains an img tag", doc => !!doc.querySelector("img")],
+          ["The image has a web URL in src", doc => /^https:\/\//.test(doc.querySelector("img")?.getAttribute("src") || "")],
+          ["The alt text describes a mountain landscape", doc => (doc.querySelector("img")?.getAttribute("alt") || "").trim().toLowerCase() === "a mountain landscape"]
+        ]
+      },
+      {
+        title: "Create a list",
+        kicker: "5 · Grouped content",
+        copy: "A <code>&lt;ul&gt;</code> groups an unordered list. Each item inside it needs its own <code>&lt;li&gt;</code> tag.",
+        mission: "Turn Flute, Guitar, and Piano into a bulleted list with three list items.",
+        starter: "<h1>Instruments</h1>\n\nFlute\nGuitar\nPiano",
+        hint: "Wrap all three items in <code>&lt;ul&gt;...&lt;/ul&gt;</code>, and wrap each individual instrument in <code>&lt;li&gt;...&lt;/li&gt;</code>.",
+        checks: [
+          ["The page contains a ul", doc => !!doc.querySelector("ul")],
+          ["The ul contains exactly three li elements", doc => doc.querySelectorAll("ul > li").length === 3],
+          ["The list includes Flute, Guitar, and Piano", doc => ["flute", "guitar", "piano"].every(word => [...doc.querySelectorAll("ul > li")].some(li => li.textContent.trim().toLowerCase() === word))]
+        ]
+      },
+      {
+        title: "Use meaningful sections",
+        kicker: "6 · Semantic HTML",
+        copy: "Semantic tags describe a page’s structure. <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, and <code>&lt;footer&gt;</code> tell browsers and assistive technology what each region does.",
+        mission: "Wrap the h1 in header, the paragraph in main, and the copyright text in footer.",
+        starter: "<h1>My Portfolio</h1>\n<p>Welcome to my work.</p>\n<p>© 2026 Iyana</p>",
+        hint: "Use three pairs of tags: <code>&lt;header&gt;...&lt;/header&gt;</code>, <code>&lt;main&gt;...&lt;/main&gt;</code>, and <code>&lt;footer&gt;...&lt;/footer&gt;</code>.",
+        checks: [
+          ["The h1 is inside header", doc => !!doc.querySelector("header h1")],
+          ["The welcome paragraph is inside main", doc => !!doc.querySelector("main p")],
+          ["The copyright is inside footer", doc => (doc.querySelector("footer")?.textContent || "").includes("2026")]
+        ]
+      },
+      {
+        title: "Build a button",
+        kicker: "7 · Interactive elements",
+        copy: "A <code>&lt;button&gt;</code> represents an action. Clear button text tells the visitor what will happen.",
+        mission: "Add a button that says “Join the newsletter” beneath the paragraph.",
+        starter: "<h1>Music news</h1>\n<p>Get one update every Friday.</p>\n\n<!-- Add the button here -->",
+        hint: "Use <code>&lt;button&gt;Join the newsletter&lt;/button&gt;</code>.",
+        checks: [
+          ["The page contains a button", doc => !!doc.querySelector("button")],
+          ["The button says “Join the newsletter”", doc => textOf(doc, "button") === "join the newsletter"],
+          ["The button appears after the paragraph", doc => !!doc.querySelector("p + button")]
+        ]
+      },
+      {
+        title: "Collect user input",
+        kicker: "8 · Forms",
+        copy: "A form groups controls that collect information. A <code>&lt;label&gt;</code> should connect to its input using matching <code>for</code> and <code>id</code> values.",
+        mission: "Inside the form, connect the Email label to the email input. Give the input type=email, id=email, and name=email.",
+        starter: "<h1>Contact me</h1>\n\n<form>\n  <label>Email</label>\n  <input>\n  <button>Send</button>\n</form>",
+        hint: "Use <code>&lt;label for=\"email\"&gt;</code> and <code>&lt;input type=\"email\" id=\"email\" name=\"email\"&gt;</code>.",
+        checks: [
+          ["The label uses for=“email”", doc => doc.querySelector("label")?.getAttribute("for") === "email"],
+          ["The input uses type=“email”", doc => doc.querySelector("input")?.getAttribute("type")?.toLowerCase() === "email"],
+          ["The input has matching id and name values", doc => { const input = doc.querySelector("input"); return input?.id === "email" && input?.getAttribute("name") === "email"; }]
+        ]
+      },
+      {
+        title: "Nest an article",
+        kicker: "9 · Page composition",
+        copy: "An <code>&lt;article&gt;</code> is a self-contained piece of content. Nesting related elements inside it makes the relationship clear.",
+        mission: "Create one article containing an h2 titled “Why I Play Flute” and a paragraph of your choice.",
+        starter: "<main>\n  <!-- Build your article here -->\n</main>",
+        hint: "Put <code>&lt;article&gt;</code> inside main, then place both the h2 and paragraph between the article’s opening and closing tags.",
+        checks: [
+          ["An article is inside main", doc => !!doc.querySelector("main > article")],
+          ["The article has the correct h2", doc => textOf(doc, "article h2") === "why i play flute"],
+          ["The article contains a non-empty paragraph", doc => !!doc.querySelector("article p")?.textContent.trim()]
+        ]
+      },
+      {
+        title: "Build a complete page",
+        kicker: "10 · Final challenge",
+        copy: "Now combine the patterns. A full HTML document begins with <code>&lt;!DOCTYPE html&gt;</code> and contains html, head, title, and body elements.",
+        mission: "Complete the page with a title, header, main section, h1, paragraph, link, and footer. Use any text you want.",
+        starter: "<!DOCTYPE html>\n<html>\n<head>\n  <!-- Add a title -->\n</head>\n<body>\n  <!-- Build your page -->\n</body>\n</html>",
+        hint: "Inside head, add <code>&lt;title&gt;...&lt;/title&gt;</code>. Inside body, build <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>, and <code>&lt;footer&gt;</code>. Put your h1 in header and your paragraph and link in main.",
+        checks: [
+          ["The document begins with a doctype", (doc, html) => /^\s*<!doctype html>/i.test(html)],
+          ["The head contains a non-empty title", doc => !!doc.querySelector("head title")?.textContent.trim()],
+          ["The header contains an h1", doc => !!doc.querySelector("body header h1")?.textContent.trim()],
+          ["Main contains a paragraph and link", doc => !!doc.querySelector("body main p")?.textContent.trim() && !!doc.querySelector("body main a[href]")],
+          ["The body contains a footer", doc => !!doc.querySelector("body footer")?.textContent.trim()]
+        ]
+      }
+    ];
+
+    const stateKey = "html-coding-lab-v1";
+    let state;
+    try { state = JSON.parse(localStorage.getItem(stateKey)) || {}; } catch { state = {}; }
+    state.completed = Array.isArray(state.completed) ? state.completed : [];
+    state.code = state.code && typeof state.code === "object" ? state.code : {};
+    let current = Math.min(Number.isInteger(state.current) ? state.current : 0, exercises.length - 1);
+    let previewTimer;
+
+    const lessonList = document.querySelector("#lessonList");
+    const lessonView = document.querySelector("#lessonView");
+    const celebration = document.querySelector("#celebration");
+    const editor = document.querySelector("#editor");
+    const preview = document.querySelector("#preview");
+    const checklist = document.querySelector("#checklist");
+    const feedback = document.querySelector("#feedback");
+    const nextButton = document.querySelector("#nextButton");
+    const hintBox = document.querySelector("#hintBox");
+
+    function textOf(doc, selector) { return (doc.querySelector(selector)?.textContent || "").trim().toLowerCase(); }
+    function save() { localStorage.setItem(stateKey, JSON.stringify(state)); }
+    function documentFrom(code) { return new DOMParser().parseFromString(code, "text/html"); }
+
+    function renderNav() {
+      lessonList.innerHTML = "";
+      exercises.forEach((exercise, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `lesson-dot${index === current ? " active" : ""}${state.completed.includes(index) ? " done" : ""}`;
+        button.innerHTML = `<span class="dot-number">${state.completed.includes(index) ? "✓" : index + 1}</span><span class="dot-title">${exercise.title}</span>`;
+        button.setAttribute("aria-label", `Exercise ${index + 1}: ${exercise.title}${state.completed.includes(index) ? ", complete" : ""}`);
+        button.addEventListener("click", () => loadExercise(index));
+        lessonList.append(button);
+      });
+      const count = state.completed.length;
+      document.querySelector("#courseProgress").style.width = `${count / exercises.length * 100}%`;
+      document.querySelector("#progressText").textContent = `${count} of ${exercises.length} complete`;
+    }
+
+    function loadExercise(index) {
+      current = index;
+      state.current = current;
+      save();
+      lessonView.style.display = "block";
+      celebration.classList.remove("show");
+      const exercise = exercises[current];
+      document.querySelector("#lessonKicker").textContent = exercise.kicker;
+      document.querySelector("#lessonTitle").textContent = exercise.title;
+      document.querySelector("#lessonCopy").innerHTML = exercise.copy;
+      document.querySelector("#mission").textContent = exercise.mission;
+      editor.value = state.code[current] ?? exercise.starter;
+      hintBox.innerHTML = exercise.hint;
+      hintBox.classList.remove("show");
+      document.querySelector("#hintButton").textContent = "Show hint";
+      feedback.className = "feedback";
+      nextButton.hidden = !state.completed.includes(current);
+      nextButton.textContent = current === exercises.length - 1 ? "Finish course →" : "Next exercise →";
+      makeChecklist();
+      updatePreview();
+      updateLineCount();
+      renderNav();
+    }
+
+    function makeChecklist(results = []) {
+      const exercise = exercises[current];
+      checklist.innerHTML = "";
+      exercise.checks.forEach(([label], index) => {
+        const li = document.createElement("li");
+        li.className = `check-item${results[index] ? " pass" : ""}`;
+        li.innerHTML = `<span class="check-icon">${results[index] ? "✓" : "·"}</span><span>${label}</span>`;
+        checklist.append(li);
+      });
+    }
+
+    function updatePreview() {
+      const code = editor.value;
+      const previewStyles = `<style>body{padding:22px;font-family:system-ui,-apple-system,sans-serif;color:#242424;line-height:1.5}img{max-width:100%;height:auto;border-radius:10px}a{color:#1769aa}button,input{font:inherit;padding:8px 10px;margin:4px}header,main,footer,article{padding:10px;margin:7px 0;border-radius:8px}header{background:#e4f1fd}main{background:#f7f5ef}footer{background:#eee8dc}article{border:1px solid #ddd}</style>`;
+      preview.srcdoc = previewStyles + code;
+      state.code[current] = code;
+      save();
+    }
+
+    function updateLineCount() {
+      const count = editor.value.split("\n").length;
+      document.querySelector("#lineCount").textContent = `${count} ${count === 1 ? "line" : "lines"}`;
+    }
+
+    function checkCode() {
+      const code = editor.value;
+      const doc = documentFrom(code);
+      const results = exercises[current].checks.map(([, test]) => {
+        try { return Boolean(test(doc, code)); } catch { return false; }
+      });
+      makeChecklist(results);
+      const passed = results.filter(Boolean).length;
+      if (passed === results.length) {
+        if (!state.completed.includes(current)) state.completed.push(current);
+        state.completed.sort((a, b) => a - b);
+        save();
+        feedback.className = "feedback success show";
+        feedback.textContent = current === exercises.length - 1 ? "Everything works. You completed the final challenge." : "Perfect. Every requirement passed.";
+        nextButton.hidden = false;
+        renderNav();
+      } else {
+        feedback.className = "feedback try show";
+        feedback.textContent = `${passed} of ${results.length} checks passed. Look at the unfinished requirement${results.length - passed === 1 ? "" : "s"} and try again.`;
+      }
+    }
+
+    function showCelebration() {
+      lessonView.style.display = "none";
+      celebration.classList.add("show");
+      renderNav();
+    }
+
+    editor.addEventListener("input", () => {
+      updateLineCount();
+      clearTimeout(previewTimer);
+      previewTimer = setTimeout(updatePreview, 180);
+      feedback.className = "feedback";
+    });
+    editor.addEventListener("keydown", event => {
+      if (event.key === "Tab") {
+        event.preventDefault();
+        const start = editor.selectionStart;
+        editor.setRangeText("  ", start, editor.selectionEnd, "end");
+        editor.dispatchEvent(new Event("input"));
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") checkCode();
+    });
+    document.querySelector("#checkButton").addEventListener("click", checkCode);
+    document.querySelector("#resetCode").addEventListener("click", () => {
+      editor.value = exercises[current].starter;
+      state.code[current] = editor.value;
+      save();
+      updatePreview();
+      updateLineCount();
+      makeChecklist();
+      feedback.className = "feedback";
+    });
+    document.querySelector("#hintButton").addEventListener("click", event => {
+      const showing = hintBox.classList.toggle("show");
+      event.currentTarget.textContent = showing ? "Hide hint" : "Show hint";
+    });
+    nextButton.addEventListener("click", () => {
+      if (current < exercises.length - 1) loadExercise(current + 1);
+      else showCelebration();
+    });
+    document.querySelector("#reviewButton").addEventListener("click", () => loadExercise(0));
+    document.querySelector("#resetCourse").addEventListener("click", () => {
+      state = { completed: [], code: {}, current: 0 };
+      save();
+      loadExercise(0);
+    });
+
+    loadExercise(current);
+  </script>
+</body>
+</html>
